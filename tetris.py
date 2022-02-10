@@ -1,6 +1,9 @@
+from glob import glob
 import time
 import os
 import random
+
+import keyboard
 
 
 board = []
@@ -61,10 +64,15 @@ def print_board(board):
 
 
 def process_input():
-    pass
+    global global_x
+    if keyboard.is_pressed('l'):
+        global_x += 1
+    elif keyboard.is_pressed('j'):
+        global_x -= 1
 
 def update():
     global global_y
+    global global_x
     put_current_block(current_block.split('\n'), global_x, global_y)
     global_y += 1
     
