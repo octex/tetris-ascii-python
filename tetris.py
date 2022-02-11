@@ -1,4 +1,3 @@
-from glob import glob
 import time
 import os
 import random
