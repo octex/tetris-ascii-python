@@ -7,9 +7,10 @@ import keyboard
 
 
 board = []
-global_y = 1
-global_x = 1
+global_y = 0
+global_x = 6
 board_length = 20
+free_board_length = board_length
 
 
 class Blocks:
@@ -27,6 +28,11 @@ class Blocks:
 def choose_random_block():
     return random.choice(Blocks.ALL)
 
+def clear_free_board():
+    for y in range(free_board_length):
+        for x in range(board_length):
+            if board[y][x] != ' ' and board[y][x] != '#':
+                board[y][x] = ' '
 
 current_block = choose_random_block()
 
@@ -43,6 +49,7 @@ def load_board(board):
 
 def put_current_block(block, x, y):
     base_x = x
+    clear_free_board()
     for line in block:
         for char in line:
             board[y][x] = char
@@ -55,9 +62,6 @@ def print_board(board):
     for y in range(board_length):
         for x in range(board_length):
             print(board[y][x], end='')
-            previous_pos = board[y - 1][x - 1]
-            if previous_pos != ' ' and previous_pos != '#':
-                board[y - 1][x - 1] = " "
         print()
     print(' ', end='')
     print(f"{Blocks.BASE} "*9)
@@ -73,8 +77,16 @@ def process_input():
 def update():
     global global_y
     global global_x
+    global current_block
+    global free_board_length
     put_current_block(current_block.split('\n'), global_x, global_y)
-    global_y += 1
+    if global_y < free_board_length - len(current_block.split('\n')):
+        global_y += 1
+    else:
+        free_board_length -= len(current_block.split('\n'))
+        current_block = choose_random_block()
+        global_y = 0
+        global_x = 6
     
 
 def render():
