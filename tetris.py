@@ -13,6 +13,7 @@ free_board_length = board_length
 
 
 class Blocks:
+    #TODO: Add the rotation alternatives
     BASE = "#"
     I = " _\n| |\n| |\n| |\n|_|"
     O = " ___\n|   |\n|___|"
@@ -28,6 +29,13 @@ def choose_random_block():
     return random.choice(Blocks.ALL)
 
 def clear_free_board():
+    """
+    TODO
+    Limpiamos todo lo que este dentro del limite
+    Pero, si encontramos algo dentro del limite
+    Y ese algo esta en el mapa de coordenadas del
+    current_block, lo ignoramos
+    """
     for y in range(free_board_length):
         for x in range(board_length):
             if board[y][x] != ' ' and board[y][x] != '#':
@@ -36,7 +44,7 @@ def clear_free_board():
 current_block = choose_random_block()
 
 
-def load_board(board):
+def load_board():
     for y in range(board_length):
         new_line = []
         new_line.append(Blocks.BASE)
@@ -78,14 +86,24 @@ def update():
     global global_x
     global current_block
     global free_board_length
-    put_current_block(current_block.split('\n'), global_x, global_y)
-    if global_y < free_board_length - len(current_block.split('\n')):
-        global_y += 1
-    else:
-        free_board_length -= len(current_block.split('\n'))
+
+    splitted_block = current_block.split('\n')
+    delta_y = global_y + len(splitted_block)
+
+    put_current_block(splitted_block, global_x, global_y)
+    #TODO: Esta logica funciona para que caigan varios
+    # bloques, sin embargo el free_board_length esta bugueao'
+    if delta_y < board_length:
+        if board[delta_y][global_x] == ' ':
+            global_y += 1
+    elif delta_y >= board_length:
+        if board[delta_y - 1][global_x] == ' ':
+            global_y += 1
+        free_board_length -= len(splitted_block)
         current_block = choose_random_block()
         global_y = 0
         global_x = 6
+        
     
 
 def render():
@@ -94,9 +112,9 @@ def render():
 
 
 if __name__ == '__main__':
-    load_board(board)
+    load_board()
     while True:
         process_input()
         update()
         render()
-        time.sleep(1)
+        time.sleep(0.35)
