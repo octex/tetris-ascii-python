@@ -3,7 +3,7 @@ import os
 import random
 
 import keyboard
-
+import models as m
 
 board = []
 global_y = 0
@@ -26,7 +26,9 @@ class Blocks:
 
 
 def choose_random_block():
-    return random.choice(Blocks.ALL)
+    block_sprites = random.choice(m.Blocks.ALL)
+    new_block = m.Block(x=global_x, y=global_y, animations=block_sprites)
+    return new_block
 
 def clear_free_board():
     """
@@ -80,6 +82,8 @@ def process_input():
         global_x += 1
     elif keyboard.is_pressed('j'):
         global_x -= 1
+    elif keyboard.is_pressed('k'):
+        current_block.rotate()
 
 def update():
     global global_y
@@ -87,9 +91,8 @@ def update():
     global current_block
     global free_board_length
 
-    splitted_block = current_block.split('\n')
+    splitted_block = current_block.sprite.split('\n')
     delta_y = global_y + len(splitted_block)
-
     put_current_block(splitted_block, global_x, global_y)
     #TODO: Esta logica funciona para que caigan varios
     # bloques, sin embargo el free_board_length esta bugueao'
