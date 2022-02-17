@@ -64,3 +64,9 @@ class Block:
             t_y += 1
             t_x = base_x
         return coords
+    def is_coord_of_block(self, x, y):
+        for coord in self.coords:
+            for _coord in coord:
+                if _coord[0] == x and _coord[1] == y:
+                    return True
+        return False

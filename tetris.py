@@ -8,6 +8,7 @@ import models as m
 board = []
 global_y = 0
 global_x = 6
+# limit_x = 19
 board_length = 20
 free_board_length = board_length
 
@@ -38,8 +39,9 @@ def clear_free_board():
     Y ese algo esta en el mapa de coordenadas del
     current_block, lo ignoramos
     """
-    for y in range(free_board_length):
+    for y in range(board_length):
         for x in range(board_length):
+            # if not current_block.is_coord_of_block(x, y):
             if board[y][x] != ' ' and board[y][x] != '#':
                 board[y][x] = ' '
 
