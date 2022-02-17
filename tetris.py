@@ -39,7 +39,7 @@ def clear_free_board():
     Y ese algo esta en el mapa de coordenadas del
     current_block, lo ignoramos
     """
-    for y in range(board_length):
+    for y in range(free_board_length):
         for x in range(board_length):
             # if not current_block.is_coord_of_block(x, y):
             if board[y][x] != ' ' and board[y][x] != '#':
