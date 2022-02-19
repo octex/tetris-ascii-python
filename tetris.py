@@ -6,24 +6,13 @@ import keyboard
 import models as m
 
 board = []
+b1 = []
+b2 = []
 global_y = 0
 global_x = 6
 # limit_x = 19
 board_length = 20
 free_board_length = board_length
-
-
-class Blocks:
-    #TODO: Add the rotation alternatives
-    BASE = "#"
-    I = " _\n| |\n| |\n| |\n|_|"
-    O = " ___\n|   |\n|___|"
-    T = "   _\n _| |_\n|_____|"
-    S = " _\n| |_\n|_  |\n  |_|"
-    L = " _\n| |\n| |_\n|___|"
-    Z = "   _\n _| |\n|  _|\n|_|"
-    J = "   _\n  | |\n _| |\n|___|"
-    ALL = [I, O, T, S, L, Z, J]
 
 
 def choose_random_block():
@@ -41,22 +30,24 @@ def clear_free_board():
     """
     for y in range(free_board_length):
         for x in range(board_length):
-            # if not current_block.is_coord_of_block(x, y):
-            if board[y][x] != ' ' and board[y][x] != '#':
-                board[y][x] = ' '
+            if not current_block.is_coord_of_block(x, y):
+                if board[y][x] != ' ' and board[y][x] != '#':
+                    board[y][x] = ' '
 
 current_block = choose_random_block()
 
 
 def load_board():
-    for y in range(board_length):
+    for _y in range(board_length):
         new_line = []
-        new_line.append(Blocks.BASE)
-        for x in range(board_length - 2):
+        new_line.append(m.Blocks.BASE)
+        for _x in range(board_length - 2):
             new_line.append(' ')
-        new_line.append(Blocks.BASE)
-        board.append(new_line)
-    
+        new_line.append(m.Blocks.BASE)
+        # board.append(new_line)
+        b1.append(new_line)
+        b2.append(new_line)
+
 
 def put_current_block(block, x, y):
     base_x = x
@@ -75,7 +66,7 @@ def print_board(board):
             print(board[y][x], end='')
         print()
     print(' ', end='')
-    print(f"{Blocks.BASE} "*9)
+    print(f"{m.Blocks.BASE} "*9)
 
 
 def process_input():
@@ -92,6 +83,14 @@ def update():
     global global_x
     global current_block
     global free_board_length
+    global board
+
+    if board == []:
+        board = b1
+    elif board == b1:
+        board = b2
+    elif board == b2:
+        board = b1
 
     splitted_block = current_block.sprite.split('\n')
     delta_y = global_y + len(splitted_block)
