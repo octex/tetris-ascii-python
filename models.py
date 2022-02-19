@@ -49,6 +49,10 @@ class Block:
         self.sprite = self.animations[self.current_index]
         self.coords = self.generate_coords()
     
+    def update_pos(self, x, y):
+        self.x = x
+        self.y = y
+
     def generate_coords(self):
         coords = []
         sprite_splitted = self.sprite.split('\n')

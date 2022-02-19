@@ -6,8 +6,6 @@ import keyboard
 import models as m
 
 board = []
-b1 = []
-b2 = []
 global_y = 0
 global_x = 6
 # limit_x = 19
@@ -21,16 +19,9 @@ def choose_random_block():
     return new_block
 
 def clear_free_board():
-    """
-    TODO
-    Limpiamos todo lo que este dentro del limite
-    Pero, si encontramos algo dentro del limite
-    Y ese algo esta en el mapa de coordenadas del
-    current_block, lo ignoramos
-    """
-    for y in range(free_board_length):
+    for y in range(board_length):
         for x in range(board_length):
-            if not current_block.is_coord_of_block(x, y):
+            #if not current_block.is_coord_of_block(x, y):
                 if board[y][x] != ' ' and board[y][x] != '#':
                     board[y][x] = ' '
 
@@ -44,9 +35,7 @@ def load_board():
         for _x in range(board_length - 2):
             new_line.append(' ')
         new_line.append(m.Blocks.BASE)
-        # board.append(new_line)
-        b1.append(new_line)
-        b2.append(new_line)
+        board.append(new_line)
 
 
 def put_current_block(block, x, y):
@@ -85,16 +74,11 @@ def update():
     global free_board_length
     global board
 
-    if board == []:
-        board = b1
-    elif board == b1:
-        board = b2
-    elif board == b2:
-        board = b1
-
     splitted_block = current_block.sprite.split('\n')
     delta_y = global_y + len(splitted_block)
     put_current_block(splitted_block, global_x, global_y)
+    current_block.update_pos(global_x, global_y)
+    current_block.generate_coords()
     #TODO: Esta logica funciona para que caigan varios
     # bloques, sin embargo el free_board_length esta bugueao'
     if delta_y < board_length:
