@@ -1,5 +1,5 @@
-import time
 from game import Game
+
 
 if __name__ == '__main__':
     game = Game(board_len=20)
@@ -7,4 +7,3 @@ if __name__ == '__main__':
         game.process_input()
         game.update()
         game.render()
-        time.sleep(0.35)

@@ -1,18 +1,30 @@
+import time
 import os
 import random
 import keyboard
 import models as m
 
 
+from datetime import datetime
+
+
+HIGH_FRAMES = 0.5
+LOW_FRAMES = 0.15
+
+
 class Game:
 	def __init__(self, board_len):
 		self.board = []
+		self.new_board_frame = []
 		self.board_length = board_len
 		self.free_board_length = board_len
 		self.is_running = True
 		self.global_y = 0
 		self.global_x = 6
 		self.current_block = self.choose_random_block()
+		self.deltaTime = 0
+		self.last = datetime.now()
+		self.current = None
 		self.load_board()
 
 	def process_input(self):
@@ -24,27 +36,43 @@ class Game:
 			self.current_block.rotate()
 
 	def update(self):
+		self.new_board_frame = self.board
+		self.current = datetime.now()
+		self.deltaTime = (self.current - self.last) / 1000
+		self.deltaTime = float(str(self.deltaTime).split(':')[2])
+
 		splitted_block = self.current_block.sprite.split('\n')
 		delta_y = self.global_y + len(splitted_block)
 		self.put_current_block(splitted_block, self.global_x, self.global_y)
 		self.current_block.update_pos(self.global_x, self.global_y)
 		self.current_block.generate_coords()
-        #TODO: Esta logica funciona para que caigan varios
+        
+		#TODO: Esta logica funciona para que caigan varios
         # bloques, sin embargo el free_board_length esta bugueao'
+		
 		if delta_y < self.board_length:
-			if self.board[delta_y][self.global_x] == ' ':
+			if self.new_board_frame[delta_y][self.global_x] == ' ':
 				self.global_y += 1
 		elif delta_y >= self.board_length:
-			if self.board[delta_y - 1][self.global_x] == ' ':
+			if self.new_board_frame[delta_y - 1][self.global_x] == ' ':
 				self.global_y += 1
 			self.free_board_length -= len(splitted_block)
 			self.current_block = self.choose_random_block()
 			self.global_y = 0
 			self.global_x = 6
+		self.last = self.current
 
 	def render(self):
-		os.system('clear')
+		os.system("clear")
 		self.print_board()
+		if self.deltaTime < LOW_FRAMES:
+			self.deltaTime = LOW_FRAMES
+		elif self.deltaTime > HIGH_FRAMES:
+			self.deltaTime = HIGH_FRAMES
+		print(f"Deltatime: {self.deltaTime}")
+		print(f"Last Frame Time: {self.last}")
+		print(f"Current Frame Time: {self.current}")
+		time.sleep(self.deltaTime)
 
 	def put_current_block(self, block, x, y):
 		base_x = x
@@ -73,6 +101,7 @@ class Game:
 						self.board[y][x] = ' '
 
 	def print_board(self):
+		self.board = self.new_board_frame
 		for y in range(self.board_length):
 			for x in range(self.board_length):
 				print(self.board[y][x], end='')
