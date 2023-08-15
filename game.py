@@ -1,10 +1,10 @@
 import time
 import os
 import random
-import keyboard
 import models as m
 
 
+from pynput import keyboard
 from datetime import datetime
 
 
@@ -28,12 +28,15 @@ class Game:
 		self.load_board()
 
 	def process_input(self):
-		if keyboard.is_pressed('l'):
-			self.global_x += 1
-		elif keyboard.is_pressed('j'):
-			self.global_x -= 1
-		elif keyboard.is_pressed('k'):
-			self.current_block.rotate()
+		with keyboard.Events() as events:
+			event = events.get(self.deltaTime)
+			if event:
+				if event.key == keyboard.KeyCode.from_char('l'):
+					self.global_x += 1
+				elif event.key == keyboard.KeyCode.from_char('j'):
+					self.global_x -= 1
+				elif event.key == keyboard.KeyCode.from_char('k'):
+					self.current_block.rotate()
 
 	def update(self):
 		self.new_board_frame = self.board
