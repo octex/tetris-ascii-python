@@ -49,21 +49,8 @@ class Game:
 		prev_pos = self.current_block.coords
 		m.Board.clear_block_previous_position(prev_pos, self.new_board_frame)
 
-		#TODO: Verificar en base a las coords del bloque y no por caracter individual
 		#TODO: Agregar rotacion a la logica de update
-		"""
-			Para verificar colisiones:
-				Me traigo la linea del piso del bloque
-					De esa linea, los bordes los descarto.
-						Por cada elemento que este en el medio, me fijo que abajo no haya nada
-		"""
 		if delta_y < self.board.board_length:
-			
-			# middle_bottom = self.current_block.coords[1:-1]
-			# for coord in middle_bottom:
-			# 	if self.new_board_frame[delta_y][coord[0]] != ' ':
-			# 		pass
-			
 			if m.Board.is_line_clear(self.new_board_frame[delta_y]):
 				self.global_y += 1
 			else:
