@@ -80,3 +80,44 @@ class Block:
 
     def get_coords(self):
         return self.coords
+
+class Board:
+    def __init__(self, board_length):
+        self.board = []
+        self.board_length = board_length
+
+    def print_board(self, new_frame=None):
+        if new_frame:
+            self.board = new_frame
+        for y in range(self.board_length):
+            for x in range(self.board_length):
+                print(self.board[y][x], end='')
+            print()
+        print(' ', end='')
+        print(f"{Blocks.BASE} "*9)
+    
+    def load_board(self):
+        for _y in range(self.board_length):
+            new_line = []
+            new_line.append(Blocks.BASE)
+            for _x in range(self.board_length - 2):
+                new_line.append(' ')
+            new_line.append(Blocks.BASE)
+            self.board.append(new_line)
+
+    def clear_free_board(self):
+        for y in range(self.board_length):
+            for x in range(self.board_length):
+                #if not current_block.is_coord_of_block(x, y):
+                    if self.board[y][x] != ' ' and self.board[y][x] != '#':
+                        self.board[y][x] = ' '
+
+    def put_current_block(self, block, x, y):
+        base_x = x
+        self.clear_free_board()
+        for line in block:
+            for char in line:
+                self.board[y][x] = char
+                x += 1
+            x = base_x
+            y += 1
