@@ -113,7 +113,7 @@ class Board:
         for y in range(self.board_length):
             for x in range(self.board_length):
                 #if not current_block.is_coord_of_block(x, y):
-                    if self.board[y][x] != ' ' and self.board[y][x] != '#':
+                    if self.board[y][x] != ' ' and self.board[y][x] != Blocks.BASE:
                         self.board[y][x] = ' '
 
     @staticmethod
@@ -135,6 +135,6 @@ class Board:
     @staticmethod
     def is_line_clear(line):
         for char in line:
-            if char != ' ' and char != '#':
+            if char != ' ' and char != Blocks.BASE:
                 return False
         return True
