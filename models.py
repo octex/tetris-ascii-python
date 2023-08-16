@@ -13,11 +13,11 @@ class Blocks:
         " _ _ _\n|_|_|_|\n  |_|",
         "   _\n _|_|\n|_|_|\n  |_|")
     
-    S = ("   _ _\n _|_|_|\n|_|_|\n",
+    S = ("   _ _\n _|_|_|\n|_|_|",
         " _\n|_|_\n|_|_|\n  |_|")
 
     L = (" _\n|_|\n|_|_\n|_|_|",
-        " _ _ _\n|_|_|_|\n|_|\n",
+        " _ _ _\n|_|_|_|\n|_|",
         " _ _\n|_|_|\n  |_|\n  |_|",
         "     _\n _ _|_|\n|_|_|_|")
 
@@ -129,3 +129,10 @@ class Board:
                 x += 1
             x = base_x
             y += 1
+
+    @staticmethod
+    def is_line_clear(line):
+        for char in line:
+            if char != ' ' and char != '#':
+                return False
+        return True

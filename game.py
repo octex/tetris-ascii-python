@@ -51,17 +51,35 @@ class Game:
 
 		#TODO: Verificar en base a las coords del bloque y no por caracter individual
 		#TODO: Agregar rotacion a la logica de update
+		"""
+			Para verificar colisiones:
+				Me traigo la linea del piso del bloque
+					De esa linea, los bordes los descarto.
+						Por cada elemento que este en el medio, me fijo que abajo no haya nada
+		"""
 		if delta_y < self.board.board_length:
-			if self.new_board_frame[delta_y][self.global_x] == ' ':
-				import pdb
-				pdb.set_trace()
+			
+			# middle_bottom = self.current_block.coords[1:-1]
+			# for coord in middle_bottom:
+			# 	if self.new_board_frame[delta_y][coord[0]] != ' ':
+			# 		pass
+			
+			if m.Board.is_line_clear(self.new_board_frame[delta_y]):
 				self.global_y += 1
 			else:
-				m.Board.put_current_block(splitted_block, self.global_x, self.global_y, self.new_board_frame)
-				self.current_block = self.choose_random_block()
-				self.global_y = 0
-				self.global_x = 6
-				splitted_block = self.current_block.sprite.split('\n')
+				touches = False
+				middle_bottom = self.current_block.coords[len(self.current_block.coords) - 1][1:-1]
+				for coord in middle_bottom:
+					if self.new_board_frame[delta_y][coord[0]] != ' ':
+						touches = True
+				self.global_y += 1
+				if touches:
+					m.Board.put_current_block(splitted_block, self.global_x, self.global_y, self.new_board_frame)
+					self.current_block = self.choose_random_block()
+					self.global_y = 0
+					self.global_x = 6
+					splitted_block = self.current_block.sprite.split('\n')
+
 		elif delta_y >= self.board.board_length:
 			m.Board.put_current_block(splitted_block, self.global_x, self.global_y, self.new_board_frame)
 			self.current_block = self.choose_random_block()
