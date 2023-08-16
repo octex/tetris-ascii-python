@@ -39,6 +39,7 @@ class Block:
         self.animations = animations
         self.current_index = 0
         self.sprite = self.animations[self.current_index]
+        self.splitted = self.sprite.split('\n')
         self.coords = self.generate_coords()
 
     def rotate(self):
@@ -47,6 +48,7 @@ class Block:
         else:
             self.current_index += 1
         self.sprite = self.animations[self.current_index]
+        self.splitted = self.sprite.split('\n')
         self.coords = self.generate_coords()
     
     def update_pos(self, x, y):
@@ -56,11 +58,10 @@ class Block:
 
     def generate_coords(self):
         coords = []
-        sprite_splitted = self.sprite.split('\n')
         t_x = self.x
         t_y = self.y
         base_x = t_x
-        for line in sprite_splitted:
+        for line in self.splitted:
             new_coords = []
             for char in line:
                 if char != ' ':
@@ -95,7 +96,8 @@ class Board:
                 print(self.board[y][x], end='')
             print()
         print(' ', end='')
-        print(f"{Blocks.BASE} "*9)
+        print(f"{Blocks.BASE}" * (self.board_length - 2), end='')
+        print(' ')
     
     def load_board(self):
         for _y in range(self.board_length):

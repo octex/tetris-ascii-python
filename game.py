@@ -44,12 +44,13 @@ class Game:
 		self.deltaTime = (self.current - self.last) / 1000
 		self.deltaTime = float(str(self.deltaTime).split(':')[2])
 
-		splitted_block = self.current_block.sprite.split('\n')
-		delta_y = self.global_y + len(splitted_block)
+		# splitted_block = self.current_block.sprite.split('\n')
+		delta_y = self.global_y + len(self.current_block.splitted)
 		prev_pos = self.current_block.coords
 		m.Board.clear_block_previous_position(prev_pos, self.new_board_frame)
 
 		#TODO: Agregar rotacion a la logica de update
+		#TODO: Hay una "desincronizacion" en el espacio entre bloques
 		if delta_y < self.board.board_length:
 			if m.Board.is_line_clear(self.new_board_frame[delta_y]):
 				self.global_y += 1
@@ -61,26 +62,24 @@ class Game:
 						touches = True
 				self.global_y += 1
 				if touches:
-					m.Board.put_current_block(splitted_block, self.global_x, self.global_y, self.new_board_frame)
+					m.Board.put_current_block(self.current_block.splitted, self.global_x, self.global_y, self.new_board_frame)
 					self.current_block = self.choose_random_block()
 					self.global_y = 0
 					self.global_x = 6
-					splitted_block = self.current_block.sprite.split('\n')
 
 		elif delta_y >= self.board.board_length:
-			m.Board.put_current_block(splitted_block, self.global_x, self.global_y, self.new_board_frame)
+			m.Board.put_current_block(self.current_block.splitted, self.global_x, self.global_y, self.new_board_frame)
 			self.current_block = self.choose_random_block()
 			self.global_y = 0
-			self.global_x = 6
-			splitted_block = self.current_block.sprite.split('\n')
+			self.global_x = 6			
 
-		m.Board.put_current_block(splitted_block, self.global_x, self.global_y, self.new_board_frame)
 		self.current_block.update_pos(self.global_x, self.global_y)
+		m.Board.put_current_block(self.current_block.splitted, self.global_x, self.global_y, self.new_board_frame)
 		
 		self.last = self.current
 
 	def render(self):
-		os.system("clear")
+		os.system("clear") #TODO: Que sea portable para Linux/Windows
 		self.board.print_board(new_frame=self.new_board_frame)
 		if self.deltaTime < LOW_FRAMES:
 			self.deltaTime = LOW_FRAMES
