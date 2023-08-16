@@ -52,6 +52,7 @@ class Block:
     def update_pos(self, x, y):
         self.x = x
         self.y = y
+        self.coords = self.generate_coords()
 
     def generate_coords(self):
         coords = []
@@ -106,18 +107,25 @@ class Board:
             self.board.append(new_line)
 
     def clear_free_board(self):
+        #TODO: Revisar esta funcion porque no funciona con el doubler-buffer
         for y in range(self.board_length):
             for x in range(self.board_length):
                 #if not current_block.is_coord_of_block(x, y):
                     if self.board[y][x] != ' ' and self.board[y][x] != '#':
                         self.board[y][x] = ' '
 
-    def put_current_block(self, block, x, y):
+    @staticmethod
+    def clear_block_previous_position(prev_block_coords, frame):
+        for p_coord in prev_block_coords:
+            for x, y in p_coord:
+                frame[y][x] = ' '
+
+    @staticmethod
+    def put_current_block(block, x, y, frame=None):
         base_x = x
-        self.clear_free_board()
         for line in block:
             for char in line:
-                self.board[y][x] = char
+                frame[y][x] = char
                 x += 1
             x = base_x
             y += 1

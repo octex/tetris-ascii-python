@@ -35,6 +35,8 @@ class Game:
 					self.global_x -= 1
 				elif event.key == keyboard.KeyCode.from_char('k'):
 					self.current_block.rotate()
+				elif event.key == keyboard.KeyCode.from_char('q'):
+					self.is_running = False
 
 	def update(self):
 		self.new_board_frame = self.board.board
@@ -44,22 +46,30 @@ class Game:
 
 		splitted_block = self.current_block.sprite.split('\n')
 		delta_y = self.global_y + len(splitted_block)
-		self.board.put_current_block(splitted_block, self.global_x, self.global_y)
-		self.current_block.update_pos(self.global_x, self.global_y)
-		self.current_block.generate_coords()
-        
-		#TODO: Esta logica funciona para que caigan varios
-        # bloques, sin embargo el free_board_length esta bugueao'
-		
+		prev_pos = self.current_block.coords
+		m.Board.clear_block_previous_position(prev_pos, self.new_board_frame)
+
+		#TODO: Verificar en base a las coords del bloque y no por caracter individual
+		#TODO: Agregar rotacion a la logica de update
 		if delta_y < self.board.board_length:
 			if self.new_board_frame[delta_y][self.global_x] == ' ':
 				self.global_y += 1
+			else:
+				m.Board.put_current_block(splitted_block, self.global_x, self.global_y, self.new_board_frame)
+				self.current_block = self.choose_random_block()
+				self.global_y = 0
+				self.global_x = 6
+				splitted_block = self.current_block.sprite.split('\n')
 		elif delta_y >= self.board.board_length:
-			if self.new_board_frame[delta_y - 1][self.global_x] == ' ':
-				self.global_y += 1
+			m.Board.put_current_block(splitted_block, self.global_x, self.global_y, self.new_board_frame)
 			self.current_block = self.choose_random_block()
 			self.global_y = 0
 			self.global_x = 6
+			splitted_block = self.current_block.sprite.split('\n')
+
+		m.Board.put_current_block(splitted_block, self.global_x, self.global_y, self.new_board_frame)
+		self.current_block.update_pos(self.global_x, self.global_y)
+		
 		self.last = self.current
 
 	def render(self):
