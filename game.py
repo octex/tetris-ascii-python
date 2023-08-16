@@ -53,6 +53,8 @@ class Game:
 		#TODO: Agregar rotacion a la logica de update
 		if delta_y < self.board.board_length:
 			if self.new_board_frame[delta_y][self.global_x] == ' ':
+				import pdb
+				pdb.set_trace()
 				self.global_y += 1
 			else:
 				m.Board.put_current_block(splitted_block, self.global_x, self.global_y, self.new_board_frame)
@@ -90,3 +92,14 @@ class Game:
 		      				animations=block_sprites)
 		
 		return new_block
+
+def rotate(animations):
+    # This is just a fun thing I wanted to try
+    c_index = 0
+    while c_index <= (len(animations) - 1):
+        os.system('clear')
+        print(animations[c_index])
+        c_index += 1
+        if c_index > (len(animations) - 1):
+            c_index = 0
+        time.sleep(0.2)
