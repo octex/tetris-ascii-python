@@ -1,6 +1,7 @@
 import time
 import os
 import random
+import pdb
 import models as m
 
 
@@ -8,33 +9,39 @@ from pynput import keyboard
 from datetime import datetime
 
 
-HIGH_FRAMES = 0.5
-LOW_FRAMES = 0.15
-
-
 class Game:
-	def __init__(self, board_len):
-		self.board = m.Board(board_len)
+	def __init__(self, board_length):
+		self.board = m.Board(board_length)
 		self.new_board_frame = []
 		self.is_running = True
 		self.global_y = 0
-		self.global_x = 6
+		self.global_x = 12
 		self.current_block = self.choose_random_block()
 		self.deltaTime = 0
 		self.last = datetime.now()
 		self.current = None
+		self.rotate = False
+		self.move = True
 		self.board.load_board()
+		if os.name == 'nt':
+			self.clear = 'cls'
+		else:
+			self.clear = 'clear'
 
 	def process_input(self):
 		with keyboard.Events() as events:
-			event = events.get(self.deltaTime)
+			event = events.get(self.deltaTime * 2)
 			if event:
-				if event.key == keyboard.KeyCode.from_char('l') and self.global_x < self.board.board_length: #len block
-					self.global_x += 1
-				elif event.key == keyboard.KeyCode.from_char('j') and self.global_x > 1:
-					self.global_x -= 1
+				movement = 1
+				if event.key == keyboard.KeyCode.from_char('l'):
+					if self.move:
+						self.global_x += movement
+				elif event.key == keyboard.KeyCode.from_char('j'):
+					self.global_x -= movement
 				elif event.key == keyboard.KeyCode.from_char('k'):
-					self.current_block.rotate()
+					self.rotate = True
+				elif event.key == keyboard.KeyCode.from_char('d'):
+					self.debug()
 				elif event.key == keyboard.KeyCode.from_char('q'):
 					self.is_running = False
 
@@ -44,13 +51,25 @@ class Game:
 		self.deltaTime = (self.current - self.last) / 1000
 		self.deltaTime = float(str(self.deltaTime).split(':')[2])
 
-		# splitted_block = self.current_block.sprite.split('\n')
 		delta_y = self.global_y + len(self.current_block.splitted)
 		prev_pos = self.current_block.coords
 		m.Board.clear_block_previous_position(prev_pos, self.new_board_frame)
 
-		#TODO: Agregar rotacion a la logica de update
 		#TODO: Hay una "desincronizacion" en el espacio entre bloques
+		if self.rotate:
+			self.current_block.rotate()
+			self.rotate = False
+
+		if not self.global_x > 1:
+			self.global_x = 1
+
+		self.move = True
+		for line in self.current_block.coords:
+			for coord in line:
+				if self.global_x + (coord[0] - self.global_x) == self.board.board_length - 3:
+					self.move = False
+					break
+
 		if delta_y < self.board.board_length:
 			if m.Board.is_line_clear(self.new_board_frame[delta_y]):
 				self.global_y += 1
@@ -65,13 +84,13 @@ class Game:
 					m.Board.put_current_block(self.current_block.splitted, self.global_x, self.global_y, self.new_board_frame)
 					self.current_block = self.choose_random_block()
 					self.global_y = 0
-					self.global_x = 6
+					self.global_x = 12
 
 		elif delta_y >= self.board.board_length:
 			m.Board.put_current_block(self.current_block.splitted, self.global_x, self.global_y, self.new_board_frame)
 			self.current_block = self.choose_random_block()
 			self.global_y = 0
-			self.global_x = 6			
+			self.global_x = 12
 
 		self.current_block.update_pos(self.global_x, self.global_y)
 		m.Board.put_current_block(self.current_block.splitted, self.global_x, self.global_y, self.new_board_frame)
@@ -79,12 +98,12 @@ class Game:
 		self.last = self.current
 
 	def render(self):
-		os.system("clear") #TODO: Que sea portable para Linux/Windows
+		os.system(self.clear)
 		self.board.print_board(new_frame=self.new_board_frame)
-		if self.deltaTime < LOW_FRAMES:
-			self.deltaTime = LOW_FRAMES
-		elif self.deltaTime > HIGH_FRAMES:
-			self.deltaTime = HIGH_FRAMES
+		if self.deltaTime < m.Constants.LOW_FRAMES:
+			self.deltaTime = m.Constants.LOW_FRAMES
+		elif self.deltaTime > m.Constants.HIGH_FRAMES:
+			self.deltaTime = m.Constants.HIGH_FRAMES
 		print(f"Deltatime: {self.deltaTime}")
 		print(f"Last Frame Time: {self.last}")
 		print(f"Current Frame Time: {self.current}")
@@ -96,6 +115,15 @@ class Game:
 		      				animations=block_sprites)
 		
 		return new_block
+	
+	def debug(self):
+		msg = "Game stopped. Entering Debug Mode"
+		print()
+		print(f"{'-' * len(msg)}")
+		print(msg)
+		print(f"{'-' * len(msg)}")
+		pdb.set_trace()
+
 
 def rotate(animations):
     # This is just a fun thing I wanted to try

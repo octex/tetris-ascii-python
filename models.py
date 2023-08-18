@@ -1,5 +1,9 @@
 
 
+class Constants:
+    HIGH_FRAMES = 0.5
+    LOW_FRAMES = 0.15
+
 class Blocks:
     BASE = "#"
 
@@ -107,14 +111,6 @@ class Board:
                 new_line.append(' ')
             new_line.append(Blocks.BASE)
             self.board.append(new_line)
-
-    def clear_free_board(self):
-        #TODO: Revisar esta funcion porque no funciona con el doubler-buffer
-        for y in range(self.board_length):
-            for x in range(self.board_length):
-                #if not current_block.is_coord_of_block(x, y):
-                    if self.board[y][x] != ' ' and self.board[y][x] != Blocks.BASE:
-                        self.board[y][x] = ' '
 
     @staticmethod
     def clear_block_previous_position(prev_block_coords, frame):
