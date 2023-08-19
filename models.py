@@ -43,8 +43,8 @@ class Block:
         self.animations = animations
         self.current_index = 0
         self.sprite = self.animations[self.current_index]
-        self.splitted = self.sprite.split('\n')
-        self.coords = self.generate_coords()
+        self.generate_splitted()
+        self.generate_coords()
 
     def rotate(self):
         if self.current_index == len(self.animations) - 1:
@@ -52,16 +52,16 @@ class Block:
         else:
             self.current_index += 1
         self.sprite = self.animations[self.current_index]
-        self.splitted = self.sprite.split('\n')
-        self.coords = self.generate_coords()
+        self.generate_splitted()
+        self.generate_coords()
     
     def update_pos(self, x, y):
         self.x = x
         self.y = y
-        self.coords = self.generate_coords()
+        self.generate_coords()
 
     def generate_coords(self):
-        coords = []
+        self.coords = []
         t_x = self.x
         t_y = self.y
         base_x = t_x
@@ -72,10 +72,10 @@ class Block:
                     coord = (t_x, t_y)
                     new_coords.append(coord)
                 t_x += 1
-            coords.append(new_coords)
+            self.coords.append(new_coords)
             t_y += 1
             t_x = base_x
-        return coords
+        # return coords
 
     def is_coord_of_block(self, x, y):
         for coord in self.coords:
@@ -83,6 +83,18 @@ class Block:
                 if _coord[0] == x and _coord[1] == y:
                     return True
         return False
+
+    def get_x_length(self):
+        exes = []
+        for line in self.coords:
+            for coord in line:
+                exes.append(coord[0])
+        exes.sort()
+        exes = set(exes)
+        return len(exes)
+
+    def generate_splitted(self):
+        self.splitted = self.sprite.split('\n')
 
     def get_coords(self):
         return self.coords
@@ -96,10 +108,11 @@ class Board:
         if new_frame:
             self.board = new_frame
         for y in range(self.board_length):
+            print("\t", end='')
             for x in range(self.board_length):
-                print(self.board[y][x], end='')
+                print(f"{self.board[y][x]}", end='')
             print()
-        print(' ', end='')
+        print('\t ', end='')
         print(f"{Blocks.BASE}" * (self.board_length - 2), end='')
         print(' ')
     
@@ -113,9 +126,10 @@ class Board:
             self.board.append(new_line)
 
     @staticmethod
-    def clear_block_previous_position(prev_block_coords, frame):
+    def clear_block_previous_position(prev_block_coords, frame, block):
         for p_coord in prev_block_coords:
             for x, y in p_coord:
+                # if block.splitted[y - block.y][x - block.x] != '  ':
                 frame[y][x] = ' '
 
     @staticmethod

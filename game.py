@@ -15,7 +15,7 @@ class Game:
 		self.new_board_frame = []
 		self.is_running = True
 		self.global_y = 0
-		self.global_x = 12
+		self.global_x = 13
 		self.current_block = self.choose_random_block()
 		self.deltaTime = 0
 		self.last = datetime.now()
@@ -32,7 +32,7 @@ class Game:
 		with keyboard.Events() as events:
 			event = events.get(self.deltaTime * 2)
 			if event:
-				movement = 1
+				movement = 2
 				if event.key == keyboard.KeyCode.from_char('l'):
 					if self.move:
 						self.global_x += movement
@@ -51,11 +51,11 @@ class Game:
 		self.deltaTime = (self.current - self.last) / 1000
 		self.deltaTime = float(str(self.deltaTime).split(':')[2])
 
+		delta_x = self.global_x + self.current_block.get_x_length()
 		delta_y = self.global_y + len(self.current_block.splitted)
 		prev_pos = self.current_block.coords
-		m.Board.clear_block_previous_position(prev_pos, self.new_board_frame)
+		m.Board.clear_block_previous_position(prev_pos, self.new_board_frame, self.current_block)
 
-		#TODO: Hay una "desincronizacion" en el espacio entre bloques
 		if self.rotate:
 			self.current_block.rotate()
 			self.rotate = False
@@ -64,11 +64,9 @@ class Game:
 			self.global_x = 1
 
 		self.move = True
-		for line in self.current_block.coords:
-			for coord in line:
-				if self.global_x + (coord[0] - self.global_x) == self.board.board_length - 3:
-					self.move = False
-					break
+
+		if delta_x >= self.board.board_length - 2:
+			self.move = False
 
 		if delta_y < self.board.board_length:
 			if m.Board.is_line_clear(self.new_board_frame[delta_y]):
@@ -84,13 +82,13 @@ class Game:
 					m.Board.put_current_block(self.current_block.splitted, self.global_x, self.global_y, self.new_board_frame)
 					self.current_block = self.choose_random_block()
 					self.global_y = 0
-					self.global_x = 12
+					self.global_x = 13
 
 		elif delta_y >= self.board.board_length:
 			m.Board.put_current_block(self.current_block.splitted, self.global_x, self.global_y, self.new_board_frame)
 			self.current_block = self.choose_random_block()
 			self.global_y = 0
-			self.global_x = 12
+			self.global_x = 13
 
 		self.current_block.update_pos(self.global_x, self.global_y)
 		m.Board.put_current_block(self.current_block.splitted, self.global_x, self.global_y, self.new_board_frame)
@@ -123,6 +121,16 @@ class Game:
 		print(msg)
 		print(f"{'-' * len(msg)}")
 		pdb.set_trace()
+
+
+class Menu:
+	def __init__(self):
+		os.system('clear')
+		print("Press any key to start...")
+		input('tetris>')
+
+	def print_logo(self):
+		print()
 
 
 def rotate(animations):
