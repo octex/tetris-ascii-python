@@ -110,9 +110,8 @@ class Game:
 		block_sprites = random.choice(m.Blocks.ALL)
 		new_block = m.Block(x=self.global_x, y=self.global_y,
 		      				animations=block_sprites)
-		
 		return new_block
-	
+
 	def debug(self):
 		msg = "Game stopped. Entering Debug Mode"
 		print()
