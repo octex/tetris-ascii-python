@@ -15,7 +15,8 @@ class Game:
 		self.stdscr = stdscr
 		self.board = m.Board(board_length, stdscr)
 		self.new_board_frame = []
-		self.is_running = True
+		self.is_running = True 
+		#TODO: Mover el cursor al caracter del medio del bloque
 		self.global_y = 0
 		self.global_x = 13
 		self.current_block = self.choose_random_block()
@@ -23,20 +24,24 @@ class Game:
 		self.last = datetime.now()
 		self.current = None
 		self.rotate = False
-		self.move = True
+		self.move_r = True
+		self.move_l = True
 		self.score = 0
+		self.excluded_clear_positions = []
 		self.board.load_board()
 
 	def process_input(self):
+		#TODO: Cambiar esto por la I/O de curses
 		with keyboard.Events() as events:
 			event = events.get(self.deltaTime * 2)
 			if event:
 				movement = 2
 				if event.key == keyboard.KeyCode.from_char('l'):
-					if self.move:
+					if self.move_r:
 						self.global_x += movement
 				elif event.key == keyboard.KeyCode.from_char('j'):
-					self.global_x -= movement
+					if self.move_l:
+						self.global_x -= movement
 				elif event.key == keyboard.KeyCode.from_char('k'):
 					self.rotate = True
 				elif event.key == keyboard.KeyCode.from_char('d'):
@@ -53,19 +58,34 @@ class Game:
 		delta_x = self.global_x + self.current_block.get_x_length()
 		delta_y = self.global_y + len(self.current_block.splitted)
 		prev_pos = self.current_block.coords
-		m.Board.clear_block_previous_position(prev_pos, self.new_board_frame, self.current_block)
+		m.Board.clear_block_previous_position(prev_pos, self.new_board_frame, self.excluded_clear_positions)
 
 		if self.rotate:
 			self.current_block.rotate()
 			self.rotate = False
 
-		if not self.global_x > 1:
-			self.global_x = 1
+		self.move_r = True
+		self.move_l = True
 
-		self.move = True
+		if not self.global_x >= 1:
+			self.global_x = 1
+		else:
+			for line in self.current_block.splitted:
+				y = self.global_y + self.current_block.splitted.index(line)
+				x = self.global_x - 1
+				left_char = self.new_board_frame[y][x]
+				if left_char != '|' and left_char != ' ' and not self.current_block.is_coord_of_block(x, y):
+					self.move_l = False
 
 		if delta_x >= self.board.board_length - 2:
-			self.move = False
+			self.move_r = False
+		else:
+			for line in self.current_block.splitted:
+				y = self.global_y + self.current_block.splitted.index(line)
+				x = self.global_x + 1
+				left_char = self.new_board_frame[y][x]
+				if left_char != '|' and left_char != ' ' and not self.current_block.is_coord_of_block(x, y):
+					self.move_l = False
 
 		if delta_y < self.board.board_length:
 			if m.Board.is_line_clear(self.new_board_frame[delta_y]):
@@ -116,10 +136,11 @@ class Game:
 
 	def debug(self):
 		msg = "Game stopped. Entering Debug Mode"
-		print()
-		print(f"{'-' * len(msg)}")
-		print(msg)
-		print(f"{'-' * len(msg)}")
+		self.stdscr.addch(self.board.board_length + 2, 0, '\n')
+		self.stdscr.addstr(self.board.board_length + 3, 0, f"{'-' * len(msg)}")
+		self.stdscr.addstr(self.board.board_length + 4, 0, msg)
+		self.stdscr.addstr(self.board.board_length + 5, 0, f"{'-' * len(msg)}")
+		self.stdscr.refresh()
 		pdb.set_trace()
 
 

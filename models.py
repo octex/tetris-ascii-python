@@ -134,11 +134,13 @@ class Board:
             self.board.append(new_line)
 
     @staticmethod
-    def clear_block_previous_position(prev_block_coords, frame, block):
+    def clear_block_previous_position(prev_block_coords, frame, excluded_positions):
+        #TODO: Cuando limpie el bloque actual,
+        # no tiene que eliminar lineas de bloques previos
         for p_coord in prev_block_coords:
             for x, y in p_coord:
-                # if block.splitted[y - block.y][x - block.x] != '  ':
-                frame[y][x] = ' '
+                if not (x, y) in excluded_positions:
+                    frame[y][x] = ' '
 
     @staticmethod
     def put_current_block(block, x, y, frame=None):
