@@ -10,8 +10,9 @@ from datetime import datetime
 
 
 class Game:
-	def __init__(self, board_length):
-		self.board = m.Board(board_length)
+	def __init__(self, board_length, stdscr):
+		self.stdscr = stdscr
+		self.board = m.Board(board_length, stdscr)
 		self.new_board_frame = []
 		self.is_running = True
 		self.global_y = 0
@@ -23,10 +24,6 @@ class Game:
 		self.rotate = False
 		self.move = True
 		self.board.load_board()
-		if os.name == 'nt':
-			self.clear = 'cls'
-		else:
-			self.clear = 'clear'
 
 	def process_input(self):
 		with keyboard.Events() as events:
@@ -96,15 +93,16 @@ class Game:
 		self.last = self.current
 
 	def render(self):
-		os.system(self.clear)
+		self.stdscr.clear()
 		self.board.print_board(new_frame=self.new_board_frame)
 		if self.deltaTime < m.Constants.LOW_FRAMES:
 			self.deltaTime = m.Constants.LOW_FRAMES
 		elif self.deltaTime > m.Constants.HIGH_FRAMES:
 			self.deltaTime = m.Constants.HIGH_FRAMES
-		print(f"Deltatime: {self.deltaTime}")
-		print(f"Last Frame Time: {self.last}")
-		print(f"Current Frame Time: {self.current}")
+		self.stdscr.addstr(31, 0, f"Deltatime: {self.deltaTime}")
+		self.stdscr.addstr(32, 0, f"Last Frame Time: {self.last}")
+		self.stdscr.addstr(33, 0, f"Current Frame Time: {self.current}")
+		self.stdscr.refresh()
 		time.sleep(self.deltaTime)
 
 	def choose_random_block(self):
@@ -125,7 +123,6 @@ class Game:
 
 class Menu:
 	def __init__(self):
-		os.system('clear')
 		print("Press any key to start...")
 		input('tetris>')
 

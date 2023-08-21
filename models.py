@@ -111,7 +111,8 @@ class Block:
         return self.coords
 
 class Board:
-    def __init__(self, board_length):
+    def __init__(self, board_length, stdscr):
+        self.stdscr = stdscr
         self.board = []
         self.board_length = board_length
 
@@ -119,13 +120,10 @@ class Board:
         if new_frame:
             self.board = new_frame
         for y in range(self.board_length):
-            print("\t", end='')
             for x in range(self.board_length):
-                print(f"{self.board[y][x]}", end='')
-            print()
-        print('\t ', end='')
-        print(f"{Blocks.BASE}" * (self.board_length - 2), end='')
-        print(' ')
+                self.stdscr.addch(y, x, self.board[y][x])
+            # self.stdscr.addch(y, 0, '\n') #TODO: Esta mierda rompe todo, revisar
+        self.stdscr.addstr((self.board_length - 1), 0, f"{Blocks.BASE}" * (self.board_length - 2))
     
     def load_board(self):
         for _y in range(self.board_length):
