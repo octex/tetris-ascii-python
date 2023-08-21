@@ -122,8 +122,7 @@ class Board:
         for y in range(self.board_length):
             for x in range(self.board_length):
                 self.stdscr.addch(y, x, self.board[y][x])
-            # self.stdscr.addch(y, 0, '\n') #TODO: Esta mierda rompe todo, revisar
-        self.stdscr.addstr((self.board_length - 1), 0, f"{Blocks.BASE}" * (self.board_length - 2))
+        self.stdscr.addstr(self.board_length, 1, f"{Blocks.BASE}" * (self.board_length - 2))
     
     def load_board(self):
         for _y in range(self.board_length):

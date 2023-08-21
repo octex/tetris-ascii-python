@@ -24,6 +24,7 @@ class Game:
 		self.current = None
 		self.rotate = False
 		self.move = True
+		self.score = 0
 		self.board.load_board()
 
 	def process_input(self):
@@ -100,9 +101,10 @@ class Game:
 			self.deltaTime = m.Constants.LOW_FRAMES
 		elif self.deltaTime > m.Constants.HIGH_FRAMES:
 			self.deltaTime = m.Constants.HIGH_FRAMES
-		self.stdscr.addstr(self.board.board_length, 0, f"Deltatime: {self.deltaTime}", curses.A_STANDOUT)
-		self.stdscr.addstr(self.board.board_length + 1, 0, f"Last Frame Time: {self.last}")
-		self.stdscr.addstr(self.board.board_length + 2, 0, f"Current Frame Time: {self.current}")
+		self.stdscr.addstr(self.board.board_length + 1, 12, f"Score: {self.score}", curses.A_STANDOUT)
+		# self.stdscr.addstr(self.board.board_length, 0, f"Deltatime: {self.deltaTime}", curses.A_STANDOUT)
+		# self.stdscr.addstr(self.board.board_length + 1, 0, f"Last Frame Time: {self.last}")
+		# self.stdscr.addstr(self.board.board_length + 2, 0, f"Current Frame Time: {self.current}")
 		self.stdscr.refresh()
 		time.sleep(self.deltaTime)
 
