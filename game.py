@@ -2,6 +2,7 @@ import time
 import os
 import random
 import pdb
+import curses
 import models as m
 
 
@@ -99,9 +100,9 @@ class Game:
 			self.deltaTime = m.Constants.LOW_FRAMES
 		elif self.deltaTime > m.Constants.HIGH_FRAMES:
 			self.deltaTime = m.Constants.HIGH_FRAMES
-		self.stdscr.addstr(31, 0, f"Deltatime: {self.deltaTime}")
-		self.stdscr.addstr(32, 0, f"Last Frame Time: {self.last}")
-		self.stdscr.addstr(33, 0, f"Current Frame Time: {self.current}")
+		self.stdscr.addstr(self.board.board_length, 0, f"Deltatime: {self.deltaTime}", curses.A_STANDOUT)
+		self.stdscr.addstr(self.board.board_length + 1, 0, f"Last Frame Time: {self.last}")
+		self.stdscr.addstr(self.board.board_length + 2, 0, f"Current Frame Time: {self.current}")
 		self.stdscr.refresh()
 		time.sleep(self.deltaTime)
 
