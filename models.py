@@ -135,8 +135,6 @@ class Board:
 
     @staticmethod
     def clear_block_previous_position(prev_block_coords, frame, excluded_positions):
-        #TODO: Cuando limpie el bloque actual,
-        # no tiene que eliminar lineas de bloques previos
         for p_coord in prev_block_coords:
             for x, y in p_coord:
                 if not (x, y) in excluded_positions:

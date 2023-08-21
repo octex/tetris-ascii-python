@@ -27,6 +27,7 @@ class Game:
 		self.move_r = True
 		self.move_l = True
 		self.score = 0
+		#TODO: Ver como generar esas posiciones excluidas de la limpieza del buffer
 		self.excluded_clear_positions = []
 		self.board.load_board()
 
