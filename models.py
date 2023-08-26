@@ -1,3 +1,4 @@
+import curses
 
 
 class Constants:
@@ -121,7 +122,10 @@ class Board:
             self.board = new_frame
         for y in range(self.board_length):
             for x in range(self.board_length):
-                self.stdscr.addch(y, x, self.board[y][x])
+                if self.board[y][x] != '#' and self.board[y][x] != ' ':
+                    self.stdscr.addch(y, x, self.board[y][x], curses.A_BOLD)
+                else:
+                    self.stdscr.addch(y, x, self.board[y][x])
         self.stdscr.addstr(self.board_length, 1, f"{Blocks.BASE}" * (self.board_length - 2))
     
     def load_board(self):
