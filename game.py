@@ -13,6 +13,7 @@ from datetime import datetime
 class Game:
 	def __init__(self, board_length, stdscr):
 		self.stdscr = stdscr
+		self.stdscr.nodelay(True)
 		self.board = m.Board(board_length, stdscr)
 		self.new_board_frame = []
 		self.is_running = True 
@@ -32,23 +33,21 @@ class Game:
 		self.board.load_board()
 
 	def process_input(self):
-		#TODO: Cambiar esto por la I/O de curses
-		with keyboard.Events() as events:
-			event = events.get(self.deltaTime * 2)
-			if event:
-				movement = 2
-				if event.key == keyboard.KeyCode.from_char('l'):
-					if self.move_r:
-						self.global_x += movement
-				elif event.key == keyboard.KeyCode.from_char('j'):
-					if self.move_l:
-						self.global_x -= movement
-				elif event.key == keyboard.KeyCode.from_char('k'):
-					self.rotate = True
-				elif event.key == keyboard.KeyCode.from_char('d'):
-					self.debug()
-				elif event.key == keyboard.KeyCode.from_char('q'):
-					self.is_running = False
+		movement = 2
+		cha = self.stdscr.getch()
+		curses.flushinp()
+		if cha == ord('l'):
+			if self.move_r:
+				self.global_x += movement
+		elif cha == ord('j'):
+			if self.move_l:
+				self.global_x -= movement
+		elif cha == ord('k'):
+			self.rotate = True
+		elif cha == ord('d'):
+			self.debug()
+		elif cha == ord('q'):
+			self.is_running = False
 
 	def update(self):
 		self.new_board_frame = self.board.board
@@ -123,9 +122,6 @@ class Game:
 		elif self.deltaTime > m.Constants.HIGH_FRAMES:
 			self.deltaTime = m.Constants.HIGH_FRAMES
 		self.stdscr.addstr(self.board.board_length + 1, 12, f"Score: {self.score}", curses.A_STANDOUT)
-		# self.stdscr.addstr(self.board.board_length, 0, f"Deltatime: {self.deltaTime}", curses.A_STANDOUT)
-		# self.stdscr.addstr(self.board.board_length + 1, 0, f"Last Frame Time: {self.last}")
-		# self.stdscr.addstr(self.board.board_length + 2, 0, f"Current Frame Time: {self.current}")
 		self.stdscr.refresh()
 		time.sleep(self.deltaTime)
 
