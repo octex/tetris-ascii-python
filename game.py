@@ -6,7 +6,6 @@ import curses
 import models as m
 
 
-from pynput import keyboard
 from datetime import datetime
 
 
