@@ -116,6 +116,17 @@ class Board:
         self.stdscr = stdscr
         self.board = []
         self.board_length = board_length
+        """
+        'COLOR_BLACK': 0,
+        'COLOR_BLUE': 1,
+        'COLOR_GREEN': 2,
+        'COLOR_CYAN': 3,
+        'COLOR_RED': 4,
+        'COLOR_MAGENTA': 5,
+        'COLOR_YELLOW': 6,
+        'COLOR_WHITE': 7,
+        """
+        curses.init_pair(1, curses.COLOR_YELLOW, curses.COLOR_BLACK)
 
     def print_board(self, new_frame=None):
         if new_frame:
@@ -123,7 +134,7 @@ class Board:
         for y in range(self.board_length):
             for x in range(self.board_length):
                 if self.board[y][x] != '#' and self.board[y][x] != ' ':
-                    self.stdscr.addch(y, x, self.board[y][x], curses.A_BOLD)
+                    self.stdscr.addch(y, x, self.board[y][x], curses.color_pair(1))#curses.A_BOLD)
                 else:
                     self.stdscr.addch(y, x, self.board[y][x])
         self.stdscr.addstr(self.board_length, 1, f"{Blocks.BASE}" * (self.board_length - 2))
