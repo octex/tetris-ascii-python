@@ -57,7 +57,23 @@ class Game:
 		delta_x = self.global_x + self.current_block.get_x_length()
 		delta_y = self.global_y + len(self.current_block.splitted)
 		prev_pos = self.current_block.coords
-		m.Board.clear_block_previous_position(prev_pos, self.new_board_frame, self.excluded_clear_positions)
+		
+		"""
+			Para poder limpiar correctamente el tablero, vamos a generar un "Safe buffer"
+
+			Un safe buffer es una copia del buffer actual del tablero sin incluir la nueva pieza a colocar.
+			En ese buffer, se encuentran todos los bloques que ya han caido, y sus posiciones en el mapa.
+			Si el bloque, paso por una posicion ocupada en el safe buffer, el valor a colocar sera el almacenado en el
+				safe buffer.
+			
+		"""
+		self.board.clear_block_previous_position(prev_pos, self.new_board_frame)
+
+		for p_coord in prev_pos:
+			for x, y in p_coord:
+				if self.board.safe_buffer:
+					if self.board.safe_buffer[y][x] != ' ':
+						self.new_board_frame[y][x] = self.board.safe_buffer[y][x]
 
 		if self.rotate:
 			self.current_block.rotate()
@@ -91,6 +107,7 @@ class Game:
 				self.global_y += 1
 			else:
 				touches = False
+				#TODO: Esto esta mal, porque no siempre las colisiones verticales se dan en la parte media de abajo de todo
 				middle_bottom = self.current_block.coords[len(self.current_block.coords) - 1][1:-1]
 				for coord in middle_bottom:
 					if self.new_board_frame[delta_y][coord[0]] != ' ':
@@ -98,24 +115,32 @@ class Game:
 				self.global_y += 1
 				if touches:
 					m.Board.put_current_block(self.current_block.splitted, self.global_x, self.global_y, self.new_board_frame)
+					for p_coord in prev_pos:
+						for x, y in p_coord:
+							if self.board.safe_buffer:
+								if self.board.safe_buffer[y][x] != ' ':
+									self.new_board_frame[y][x] = self.board.safe_buffer[y][x]
+					self.board.save_safe_buffer(self.new_board_frame)
 					self.current_block = self.choose_random_block()
 					self.global_y = 0
 					self.global_x = 13
+					self.board.get_random_pair()
 
 		elif delta_y >= self.board.board_length:
 			m.Board.put_current_block(self.current_block.splitted, self.global_x, self.global_y, self.new_board_frame)
+			self.board.save_safe_buffer(self.new_board_frame)
 			self.current_block = self.choose_random_block()
 			self.global_y = 0
 			self.global_x = 13
+			self.board.get_random_pair()
 
 		self.current_block.update_pos(self.global_x, self.global_y)
 		m.Board.put_current_block(self.current_block.splitted, self.global_x, self.global_y, self.new_board_frame)
-		
 		self.last = self.current
 
 	def render(self):
 		self.stdscr.clear()
-		self.board.print_board(new_frame=self.new_board_frame)
+		self.board.print_board(new_frame=self.new_board_frame, current_block=self.current_block)
 		if self.deltaTime < m.Constants.LOW_FRAMES:
 			self.deltaTime = m.Constants.LOW_FRAMES
 		elif self.deltaTime > m.Constants.HIGH_FRAMES:

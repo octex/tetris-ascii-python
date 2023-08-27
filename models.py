@@ -2,6 +2,9 @@ import curses
 import random
 
 
+from datetime import datetime
+
+
 class Constants:
     HIGH_FRAMES = 0.5
     LOW_FRAMES = 0.15
@@ -114,19 +117,33 @@ class Board:
         self.stdscr = stdscr
         self.board = []
         self.board_length = board_length
+        self.get_random_pair()
+        self.safe_buffer = None
         # curses.init_pair(1, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+
+    def save_safe_buffer(self, buffer):
+        # f = open(f"{datetime.now().strftime('%Y-%m-%dT%H:%M:%S')}-SAFE-BUFFER.txt", "w")
+        # for line in buffer:
+        #     for char in line:
+        #         f.write(char)
+        #     f.write('\n')
+        # f.close()
+        self.safe_buffer = buffer
 
     def get_random_pair(self):
         curses.init_pair(1, random.choice(Constants.COLORS), curses.COLOR_BLACK)
 
-    def print_board(self, new_frame=None):
+    def print_board(self, new_frame=None, current_block=None):
         if new_frame:
             self.board = new_frame
         for y in range(self.board_length):
             for x in range(self.board_length):
-                if self.board[y][x] != '#' and self.board[y][x] != ' ': # and block.is_coord_of_block(x, y)
-                    self.get_random_pair()
-                    self.stdscr.addch(y, x, self.board[y][x], curses.color_pair(1) | curses.A_BOLD)
+                if current_block:
+                    if self.board[y][x] != '#' and self.board[y][x] != ' ' and current_block.is_coord_of_block(x, y): # and block.is_coord_of_block(x, y)
+                        # self.get_random_pair()
+                        self.stdscr.addch(y, x, self.board[y][x], curses.color_pair(1) | curses.A_BOLD)
+                    else:
+                        self.stdscr.addch(y, x, self.board[y][x])
                 else:
                     self.stdscr.addch(y, x, self.board[y][x])
         self.stdscr.addstr(self.board_length, 1, f"{Blocks.BASE}" * (self.board_length - 2))
@@ -140,11 +157,9 @@ class Board:
             new_line.append(Blocks.BASE)
             self.board.append(new_line)
 
-    @staticmethod
-    def clear_block_previous_position(prev_block_coords, frame, excluded_positions):
+    def clear_block_previous_position(self, prev_block_coords, frame):
         for p_coord in prev_block_coords:
             for x, y in p_coord:
-                if not (x, y) in excluded_positions:
                     frame[y][x] = ' '
 
     @staticmethod
@@ -152,7 +167,8 @@ class Board:
         base_x = x
         for line in block:
             for char in line:
-                frame[y][x] = char
+                if char != ' ':
+                    frame[y][x] = char
                 x += 1
             x = base_x
             y += 1
