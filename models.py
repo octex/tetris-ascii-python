@@ -157,9 +157,15 @@ class Board:
             new_line.append(Blocks.BASE)
             self.board.append(new_line)
 
-    def clear_block_previous_position(self, prev_block_coords, frame):
-        for p_coord in prev_block_coords:
+    def clear_block_previous_position(self, block, frame):
+        for p_coord in block.coords:
             for x, y in p_coord:
+                if self.safe_buffer:
+                    if self.safe_buffer[y][x] == ' ' and block.is_coord_of_block(x, y):
+                        frame[y][x] = ' '
+                    elif self.safe_buffer[y][x] != ' ' and block.is_coord_of_block(x, y):
+                        frame[y][x] = self.safe_buffer[y][x]
+                else:
                     frame[y][x] = ' '
 
     @staticmethod

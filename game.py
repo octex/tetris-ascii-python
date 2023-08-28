@@ -15,7 +15,7 @@ class Game:
 		self.stdscr.nodelay(True)
 		self.board = m.Board(board_length, stdscr)
 		self.new_board_frame = []
-		self.is_running = True 
+		self.is_running = True
 		#TODO: Mover el cursor al caracter del medio del bloque
 		self.global_y = 0
 		self.global_x = 13
@@ -67,13 +67,7 @@ class Game:
 				safe buffer.
 			
 		"""
-		self.board.clear_block_previous_position(prev_pos, self.new_board_frame)
-
-		for p_coord in prev_pos:
-			for x, y in p_coord:
-				if self.board.safe_buffer:
-					if self.board.safe_buffer[y][x] != ' ':
-						self.new_board_frame[y][x] = self.board.safe_buffer[y][x]
+		self.board.clear_block_previous_position(self.current_block, self.new_board_frame)
 
 		if self.rotate:
 			self.current_block.rotate()
@@ -115,11 +109,6 @@ class Game:
 				self.global_y += 1
 				if touches:
 					m.Board.put_current_block(self.current_block.splitted, self.global_x, self.global_y, self.new_board_frame)
-					for p_coord in prev_pos:
-						for x, y in p_coord:
-							if self.board.safe_buffer:
-								if self.board.safe_buffer[y][x] != ' ':
-									self.new_board_frame[y][x] = self.board.safe_buffer[y][x]
 					self.board.save_safe_buffer(self.new_board_frame)
 					self.current_block = self.choose_random_block()
 					self.global_y = 0
@@ -156,12 +145,15 @@ class Game:
 		return new_block
 
 	def debug(self):
+		import debug_utils as u
 		msg = "Game stopped. Entering Debug Mode"
 		self.stdscr.addch(self.board.board_length + 2, 0, '\n')
 		self.stdscr.addstr(self.board.board_length + 3, 0, f"{'-' * len(msg)}")
 		self.stdscr.addstr(self.board.board_length + 4, 0, msg)
 		self.stdscr.addstr(self.board.board_length + 5, 0, f"{'-' * len(msg)}")
 		self.stdscr.refresh()
+		curses.endwin()
+		print("------- Debug utils imported as u -------")
 		pdb.set_trace()
 
 
