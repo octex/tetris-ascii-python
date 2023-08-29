@@ -16,8 +16,6 @@ class Board:
         self.numeric_buffer = []
 
     def get_completed_lines(self):
-        if not self.numeric_buffer:
-            self.save_numeric_buffer(self.safe_buffer)
         y_indexes = []
         for line in self.numeric_buffer:
             current_y_index = self.numeric_buffer.index(line)
@@ -51,6 +49,7 @@ class Board:
             for char in line:
                 new_line += char
             self.safe_buffer.append(new_line)
+        self.save_numeric_buffer(self.safe_buffer)
 
     def clear_line(self, y_index, buffer=None):
         if buffer:
