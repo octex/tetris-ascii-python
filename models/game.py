@@ -57,7 +57,9 @@ class Game:
 		delta_x = self.global_x + self.current_block.get_x_length()
 		delta_y = self.global_y + len(self.current_block.splitted)
 		prev_pos = self.current_block.coords
-	
+		clear_lines = False
+		lines = None
+
 		self.board.clear_block_previous_position(prev_pos, self.new_board_frame)
 
 		if self.rotate:
@@ -105,6 +107,9 @@ class Game:
 					self.global_y = 0
 					self.global_x = 13
 					self.board.get_random_pair()
+					lines = self.board.get_completed_lines()
+					if lines:
+						clear_lines = True
 
 		elif delta_y >= self.board.board_length:
 			Board.put_current_block(self.current_block.splitted, self.global_x, self.global_y, self.new_board_frame)
@@ -113,10 +118,16 @@ class Game:
 			self.global_y = 0
 			self.global_x = 13
 			self.board.get_random_pair()
+			lines = self.board.get_completed_lines()
+			if lines:
+				clear_lines = True
 
 		self.current_block.update_pos(self.global_x, self.global_y)
 		Board.put_current_block(self.current_block.splitted, self.global_x, self.global_y, self.new_board_frame)
 		self.last = self.current
+		if clear_lines:
+			for line in lines:
+				self.board.clear_line(line, self.new_board_frame)
 
 	def render(self):
 		self.stdscr.clear()

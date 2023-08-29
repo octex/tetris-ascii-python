@@ -16,6 +16,8 @@ class Board:
         self.numeric_buffer = []
 
     def get_completed_lines(self):
+        if not self.numeric_buffer:
+            self.save_numeric_buffer(self.safe_buffer)
         y_indexes = []
         for line in self.numeric_buffer:
             current_y_index = self.numeric_buffer.index(line)
@@ -49,6 +51,17 @@ class Board:
             for char in line:
                 new_line += char
             self.safe_buffer.append(new_line)
+
+    def clear_line(self, y_index, buffer=None):
+        if buffer:
+            t_buffer = buffer
+        else:
+            t_buffer = self.board
+        for line in t_buffer:
+            if t_buffer.index(line) == y_index:
+                for char in line:
+                    if char != '#':
+                        line[line.index(char)] = ' '
 
     def get_random_pair(self):
         curses.init_pair(1, random.choice(c.COLORS), curses.COLOR_BLACK)
