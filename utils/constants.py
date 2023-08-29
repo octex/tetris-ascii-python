@@ -1,6 +1,14 @@
 import curses
 
 
+class GameState:
+    READY = 0
+    RUNNING = 1
+    CLEARING = 2
+    GAMEOVER = 3
+    PAUSED = 4
+
+
 class Constants:
     HIGH_FRAMES = 0.5
     LOW_FRAMES = 0.15

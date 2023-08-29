@@ -8,12 +8,15 @@ from models.board import Board
 from models.block import Block
 from utils.constants import Constants as c
 from utils.constants import Blocks
+from utils.constants import GameState as state
 from datetime import datetime
 
 
 class Game:
 	def __init__(self, board_length, stdscr):
 		self.stdscr = stdscr
+		self.state = state.RUNNING
+		self.previous_state = None
 		self.stdscr.nodelay(True)
 		self.board = Board(board_length, stdscr)
 		self.new_board_frame = []
@@ -45,10 +48,19 @@ class Game:
 			self.rotate = True
 		elif cha == ord('d'):
 			self.debug()
+		elif cha == ord('p'):
+			if not self.previous_state:
+				self.previous_state = self.state
+				self.state = state.PAUSED
+			else:
+				self.state = self.previous_state
+				self.previous_state = None
 		elif cha == ord('q'):
 			self.is_running = False
 
 	def update(self):
+		if self.state == state.PAUSED:
+			return
 		self.new_board_frame = self.board.board
 		self.current = datetime.now()
 		self.deltaTime = (self.current - self.last) / 1000
@@ -87,7 +99,7 @@ class Game:
 				x = self.global_x + 1
 				left_char = self.new_board_frame[y][x]
 				if left_char != '|' and left_char != ' ' and not self.current_block.is_coord_of_block(x, y):
-					self.move_l = False
+					self.move_r = False
 
 		if delta_y < self.board.board_length:
 			if Board.is_line_clear(self.new_board_frame[delta_y]):
@@ -130,6 +142,8 @@ class Game:
 				self.board.clear_line(line, self.new_board_frame)
 
 	def render(self):
+		if self.state == state.PAUSED:
+			return
 		self.stdscr.clear()
 		self.board.print_board(new_frame=self.new_board_frame, current_block=self.current_block)
 		if self.deltaTime < c.LOW_FRAMES:
