@@ -118,17 +118,16 @@ class Board:
         self.board = []
         self.board_length = board_length
         self.get_random_pair()
-        self.safe_buffer = None
-        # curses.init_pair(1, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+        self.safe_buffer = []
+        self.condition_counter = 0
 
     def save_safe_buffer(self, buffer):
-        # f = open(f"{datetime.now().strftime('%Y-%m-%dT%H:%M:%S')}-SAFE-BUFFER.txt", "w")
-        # for line in buffer:
-        #     for char in line:
-        #         f.write(char)
-        #     f.write('\n')
-        # f.close()
-        self.safe_buffer = buffer
+        self.safe_buffer = []
+        for line in buffer:
+            new_line = ""
+            for char in line:
+                new_line += char
+            self.safe_buffer.append(new_line)
 
     def get_random_pair(self):
         curses.init_pair(1, random.choice(Constants.COLORS), curses.COLOR_BLACK)
@@ -157,14 +156,15 @@ class Board:
             new_line.append(Blocks.BASE)
             self.board.append(new_line)
 
-    def clear_block_previous_position(self, block, frame):
-        for p_coord in block.coords:
+    def clear_block_previous_position(self, coords, frame):
+        for p_coord in coords:
             for x, y in p_coord:
                 if self.safe_buffer:
-                    if self.safe_buffer[y][x] == ' ' and block.is_coord_of_block(x, y):
+                    if self.safe_buffer[y][x] == ' ':
                         frame[y][x] = ' '
-                    elif self.safe_buffer[y][x] != ' ' and block.is_coord_of_block(x, y):
+                    elif self.safe_buffer[y][x] != ' ':
                         frame[y][x] = self.safe_buffer[y][x]
+                        self.condition_counter += 1
                 else:
                     frame[y][x] = ' '
 

@@ -67,7 +67,7 @@ class Game:
 				safe buffer.
 			
 		"""
-		self.board.clear_block_previous_position(self.current_block, self.new_board_frame)
+		self.board.clear_block_previous_position(prev_pos, self.new_board_frame)
 
 		if self.rotate:
 			self.current_block.rotate()
@@ -145,7 +145,7 @@ class Game:
 		return new_block
 
 	def debug(self):
-		import debug_utils as u
+		import debug_utils as du
 		msg = "Game stopped. Entering Debug Mode"
 		self.stdscr.addch(self.board.board_length + 2, 0, '\n')
 		self.stdscr.addstr(self.board.board_length + 3, 0, f"{'-' * len(msg)}")
@@ -153,7 +153,7 @@ class Game:
 		self.stdscr.addstr(self.board.board_length + 5, 0, f"{'-' * len(msg)}")
 		self.stdscr.refresh()
 		curses.endwin()
-		print("------- Debug utils imported as u -------")
+		print("------- Debug utils imported as du -------")
 		pdb.set_trace()
 
 
