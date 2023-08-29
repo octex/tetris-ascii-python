@@ -38,25 +38,26 @@ class Game:
 		movement = 2
 		cha = self.stdscr.getch()
 		curses.flushinp()
-		if cha == ord('l'):
-			if self.move_r:
-				self.global_x += movement
-		elif cha == ord('j'):
-			if self.move_l:
-				self.global_x -= movement
-		elif cha == ord('k'):
-			self.rotate = True
-		elif cha == ord('d'):
-			self.debug()
-		elif cha == ord('p'):
+		if self.state != state.PAUSED:
+			if cha == ord('l'):
+				if self.move_r:
+					self.global_x += movement
+			elif cha == ord('j'):
+				if self.move_l:
+					self.global_x -= movement
+			elif cha == ord('k'):
+				self.rotate = True
+			elif cha == ord('d'):
+				self.debug()
+			elif cha == ord('q'):
+				self.is_running = False
+		if cha == ord('p'):
 			if not self.previous_state:
 				self.previous_state = self.state
 				self.state = state.PAUSED
 			else:
 				self.state = self.previous_state
 				self.previous_state = None
-		elif cha == ord('q'):
-			self.is_running = False
 
 	def update(self):
 		if self.state == state.PAUSED:
