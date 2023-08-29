@@ -27,8 +27,6 @@ class Game:
 		self.move_r = True
 		self.move_l = True
 		self.score = 0
-		#TODO: Ver como generar esas posiciones excluidas de la limpieza del buffer
-		self.excluded_clear_positions = []
 		self.board.load_board()
 
 	def process_input(self):
@@ -57,16 +55,7 @@ class Game:
 		delta_x = self.global_x + self.current_block.get_x_length()
 		delta_y = self.global_y + len(self.current_block.splitted)
 		prev_pos = self.current_block.coords
-		
-		"""
-			Para poder limpiar correctamente el tablero, vamos a generar un "Safe buffer"
-
-			Un safe buffer es una copia del buffer actual del tablero sin incluir la nueva pieza a colocar.
-			En ese buffer, se encuentran todos los bloques que ya han caido, y sus posiciones en el mapa.
-			Si el bloque, paso por una posicion ocupada en el safe buffer, el valor a colocar sera el almacenado en el
-				safe buffer.
-			
-		"""
+	
 		self.board.clear_block_previous_position(prev_pos, self.new_board_frame)
 
 		if self.rotate:

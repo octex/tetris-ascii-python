@@ -2,9 +2,6 @@ import curses
 import random
 
 
-from datetime import datetime
-
-
 class Constants:
     HIGH_FRAMES = 0.5
     LOW_FRAMES = 0.15
