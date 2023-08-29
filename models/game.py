@@ -1,11 +1,13 @@
 import time
-import os
 import random
 import pdb
 import curses
-import models as m
 
 
+from models.board import Board
+from models.block import Block
+from utils.constants import Constants as c
+from utils.constants import Blocks
 from datetime import datetime
 
 
@@ -13,7 +15,7 @@ class Game:
 	def __init__(self, board_length, stdscr):
 		self.stdscr = stdscr
 		self.stdscr.nodelay(True)
-		self.board = m.Board(board_length, stdscr)
+		self.board = Board(board_length, stdscr)
 		self.new_board_frame = []
 		self.is_running = True
 		#TODO: Mover el cursor al caracter del medio del bloque
@@ -86,7 +88,7 @@ class Game:
 					self.move_l = False
 
 		if delta_y < self.board.board_length:
-			if m.Board.is_line_clear(self.new_board_frame[delta_y]):
+			if Board.is_line_clear(self.new_board_frame[delta_y]):
 				self.global_y += 1
 			else:
 				touches = False
@@ -97,7 +99,7 @@ class Game:
 						touches = True
 				self.global_y += 1
 				if touches:
-					m.Board.put_current_block(self.current_block.splitted, self.global_x, self.global_y, self.new_board_frame)
+					Board.put_current_block(self.current_block.splitted, self.global_x, self.global_y, self.new_board_frame)
 					self.board.save_safe_buffer(self.new_board_frame)
 					self.current_block = self.choose_random_block()
 					self.global_y = 0
@@ -105,7 +107,7 @@ class Game:
 					self.board.get_random_pair()
 
 		elif delta_y >= self.board.board_length:
-			m.Board.put_current_block(self.current_block.splitted, self.global_x, self.global_y, self.new_board_frame)
+			Board.put_current_block(self.current_block.splitted, self.global_x, self.global_y, self.new_board_frame)
 			self.board.save_safe_buffer(self.new_board_frame)
 			self.current_block = self.choose_random_block()
 			self.global_y = 0
@@ -113,28 +115,28 @@ class Game:
 			self.board.get_random_pair()
 
 		self.current_block.update_pos(self.global_x, self.global_y)
-		m.Board.put_current_block(self.current_block.splitted, self.global_x, self.global_y, self.new_board_frame)
+		Board.put_current_block(self.current_block.splitted, self.global_x, self.global_y, self.new_board_frame)
 		self.last = self.current
 
 	def render(self):
 		self.stdscr.clear()
 		self.board.print_board(new_frame=self.new_board_frame, current_block=self.current_block)
-		if self.deltaTime < m.Constants.LOW_FRAMES:
-			self.deltaTime = m.Constants.LOW_FRAMES
-		elif self.deltaTime > m.Constants.HIGH_FRAMES:
-			self.deltaTime = m.Constants.HIGH_FRAMES
+		if self.deltaTime < c.LOW_FRAMES:
+			self.deltaTime = c.LOW_FRAMES
+		elif self.deltaTime > c.HIGH_FRAMES:
+			self.deltaTime = c.HIGH_FRAMES
 		self.stdscr.addstr(self.board.board_length + 1, 12, f"Score: {self.score}", curses.A_STANDOUT)
 		self.stdscr.refresh()
 		time.sleep(self.deltaTime)
 
 	def choose_random_block(self):
-		block_sprites = random.choice(m.Blocks.ALL)
-		new_block = m.Block(x=self.global_x, y=self.global_y,
-		      				animations=block_sprites)
+		block_sprites = random.choice(Blocks.ALL)
+		new_block = Block(x=self.global_x, y=self.global_y,
+		      			  animations=block_sprites)
 		return new_block
 
 	def debug(self):
-		import debug_utils as du
+		import utils.debug_utils as du
 		msg = "Game stopped. Entering Debug Mode"
 		self.stdscr.addch(self.board.board_length + 2, 0, '\n')
 		self.stdscr.addstr(self.board.board_length + 3, 0, f"{'-' * len(msg)}")
@@ -144,32 +146,3 @@ class Game:
 		curses.endwin()
 		print("------- Debug utils imported as du -------")
 		pdb.set_trace()
-
-
-class Menu:
-	def __init__(self, stdscr):
-		self.stdscr = stdscr
-		self.print_logo()
-		self.stdscr.addstr(8, 0, "\t\tPress any key to start...", curses.A_BOLD)
-		self.stdscr.refresh()
-		self.stdscr.getkey()
-
-	def print_logo(self):
-		# logo source: https://patorjk.com/software/taag/#p=display&f=Varsity&t=TETRIS
-		f = open('tetris-logo.txt', 'r')
-		text = f.read()
-		self.stdscr.clear()
-		self.stdscr.addstr(0, 0, f"{text}", curses.A_BOLD)
-		self.stdscr.refresh()
-
-
-def rotate(animations):
-    # This is just a fun thing I wanted to try
-    c_index = 0
-    while c_index <= (len(animations) - 1):
-        os.system('clear')
-        print(animations[c_index])
-        c_index += 1
-        if c_index > (len(animations) - 1):
-            c_index = 0
-        time.sleep(0.2)

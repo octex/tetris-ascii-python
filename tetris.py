@@ -1,5 +1,7 @@
-from game import Game, Menu
+from models.game import Game
+from models.menu import Menu
 from curses import wrapper
+
 
 def main(stdscr):
     menu = Menu(stdscr=stdscr)
