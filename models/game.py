@@ -55,6 +55,8 @@ class Game:
 			if not self.previous_state:
 				self.previous_state = self.state
 				self.state = state.PAUSED
+				self.stdscr.addstr(self.global_y + 1, 13, "PAUSED", curses.A_BOLD)
+				self.stdscr.refresh()
 			else:
 				self.state = self.previous_state
 				self.previous_state = None
