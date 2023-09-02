@@ -61,6 +61,19 @@ class Board:
                 for char in line:
                     if char != '#':
                         line[line.index(char)] = ' '
+                self.clear_trash_chars(t_buffer, y_index - 1)
+
+    def clear_trash_chars(self, buffer=None, start_index=0):
+        if buffer:
+            t_buffer = buffer
+        else:
+            t_buffer = self.board
+        for i in range(len(t_buffer[start_index])):
+            if t_buffer[start_index][i] == '_':
+                index_l = i - 1
+                index_r = i + 1
+                if t_buffer[start_index][index_l] != '|' or t_buffer[start_index][index_r] != '|':
+                    t_buffer[start_index][i] = ' '
 
     def get_random_pair(self):
         curses.init_pair(1, random.choice(c.COLORS), curses.COLOR_BLACK)
