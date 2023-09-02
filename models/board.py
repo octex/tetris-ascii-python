@@ -64,7 +64,6 @@ class Board:
                 self.clear_trash_chars(t_buffer, y_index - 1)
 
     def rebuild_board(self, buffer):
-        # counter = 0
         t_buffer = buffer.copy()
         for i in range(len(t_buffer)):
             if self.is_line_clear(t_buffer[i]):
@@ -72,7 +71,6 @@ class Board:
                 buffer[i].clear()
                 buffer.remove([])
                 buffer.insert(0, t_line)
-        # buffer = t_buffer.copy()
 
     def clear_trash_chars(self, buffer=None, start_index=0):
         if buffer:
@@ -83,7 +81,10 @@ class Board:
             if t_buffer[start_index][i] == '_':
                 index_l = i - 1
                 index_r = i + 1
-                if t_buffer[start_index][index_l] != '|' or t_buffer[start_index][index_r] != '|':
+                condition = (t_buffer[start_index][index_l] != '|' or \
+                             t_buffer[start_index][index_r] != '|') or \
+                                t_buffer[start_index - 1][i] == ' '
+                if condition:
                     t_buffer[start_index][i] = ' '
 
     def get_random_pair(self):
