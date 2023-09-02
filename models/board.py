@@ -63,6 +63,17 @@ class Board:
                         line[line.index(char)] = ' '
                 self.clear_trash_chars(t_buffer, y_index - 1)
 
+    def rebuild_board(self, buffer):
+        # counter = 0
+        t_buffer = buffer.copy()
+        for i in range(len(t_buffer)):
+            if self.is_line_clear(t_buffer[i]):
+                t_line = buffer[i].copy()
+                buffer[i].clear()
+                buffer.remove([])
+                buffer.insert(0, t_line)
+        # buffer = t_buffer.copy()
+
     def clear_trash_chars(self, buffer=None, start_index=0):
         if buffer:
             t_buffer = buffer

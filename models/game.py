@@ -140,6 +140,7 @@ class Game:
 		if clear_lines:
 			for line in lines:
 				self.board.clear_line(line, self.new_board_frame)
+			self.board.rebuild_board(self.new_board_frame)
 			self.board.save_safe_buffer(self.new_board_frame)
 		
 		self.current_block.update_pos(self.global_x, self.global_y)
