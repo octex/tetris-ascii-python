@@ -11,9 +11,15 @@ class Board:
         self.stdscr = stdscr
         self.board = []
         self.board_length = board_length
+        self.middle = int(self.board_length / 2)
         self.get_random_pair()
         self.safe_buffer = []
         self.numeric_buffer = []
+        self.load_board()
+        # source of this: https://stackoverflow.com/questions/18551558/how-to-use-terminal-color-palette-with-curses
+        curses.start_color()
+        curses.use_default_colors()
+        self.init_color_pairs()
 
     def get_completed_lines(self):
         y_indexes = []
@@ -87,8 +93,31 @@ class Board:
                 if condition:
                     t_buffer[start_index][i] = ' '
 
+    def init_color_pairs(self):
+        # Base pair for all borders
+        curses.init_pair(1, 232, curses.COLOR_BLACK)
+        
+        # I
+        curses.init_pair(2, curses.COLOR_CYAN, curses.COLOR_CYAN)
+        curses.init_pair(3, curses.COLOR_CYAN, 232)
+        # TODO: No estamos mal encaminados, pero pensaria en utilizar 3 colores por bloque.
+        #       Referencia: https://en.wikipedia.org/wiki/Tetris#/media/File:Tetrominoes_IJLO_STZ_Worlds.svg
+
+        # # O
+        # curses.init_pair(3, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+        # # T
+        # curses.init_pair(4, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
+        # # S
+        # curses.init_pair(5, curses.COLOR_GREEN, curses.COLOR_BLACK)
+        # # L
+        # curses.init_pair(6, 208, curses.COLOR_BLACK)
+        # # Z
+        # curses.init_pair(7, curses.COLOR_RED, curses.COLOR_BLACK)
+        # # J
+        # curses.init_pair(8, curses.COLOR_BLUE, curses.COLOR_BLACK)
+
     def get_random_pair(self):
-        curses.init_pair(1, random.choice(c.COLORS), curses.COLOR_BLACK)
+        curses.init_pair(9, random.choice(c.COLORS), curses.COLOR_BLACK)
 
     def print_board(self, new_frame=None, current_block=None):
         if new_frame:
@@ -96,9 +125,13 @@ class Board:
         for y in range(self.board_length):
             for x in range(self.board_length):
                 if current_block:
-                    if self.board[y][x] != '#' and self.board[y][x] != ' ' and current_block.is_coord_of_block(x, y): # and block.is_coord_of_block(x, y)
+                    if self.board[y][x] != '#' and self.board[y][x] != ' ' and current_block.is_coord_of_block(x, y):
                         # self.get_random_pair()
-                        self.stdscr.addch(y, x, self.board[y][x], curses.color_pair(1) | curses.A_BOLD)
+                        self.stdscr.addch(y, x, self.board[y][x], curses.color_pair(9) | curses.A_BOLD)
+                        # if (self.board[y][x] == '|' or self.board[y][x] == '_') and (self.board[y][x - 1] == ' ' or self.board[y][x + 1] == ' '):
+                        #     self.stdscr.addch(y, x, self.board[y][x], curses.color_pair(3) | curses.A_BOLD)
+                        # else:
+                        #     self.stdscr.addch(y, x, self.board[y][x], curses.color_pair(2) | curses.A_BOLD)
                     else:
                         self.stdscr.addch(y, x, self.board[y][x])
                 else:

@@ -32,7 +32,6 @@ class Game:
 		self.move_r = True
 		self.move_l = True
 		self.score = 0
-		self.board.load_board()
 
 	def process_input(self):
 		movement = 2
